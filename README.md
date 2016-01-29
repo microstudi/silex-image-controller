@@ -30,7 +30,7 @@ $app->register(new InterventionImageServiceProvider);
       ;
 
 //Automatic images
-$app->mount('/image', new Microstudi\Silex\Controller\ImageControllerProvider(array(
+$app->mount('/your_path', new Microstudi\Silex\Controller\ImageControllerProvider(array(
                 'image_path' => '/path/to/original/images',
                 'image_cache_path' => '/path/to/cache/folder'
             ) ));
@@ -38,19 +38,24 @@ $app->mount('/image', new Microstudi\Silex\Controller\ImageControllerProvider(ar
 $app->run();
 ```
 
-**Twig Helper**: If twig is present a convenient function can be used to generate proper urls for auto-resized images `image_path(image, size`)`:
+**Twig Helper**: If twig is present a convenient function can be used to generate proper urls for auto-resized images `image_path(image, size)`:
 
 ```twig
 {{ image_path('path/to/image.png', 100, 100) }}
 {{ image_path('path/to/image.png', 100, 100, 'c') }}
 ```
 
-resize image
 
-your_path/200x300/products/image_product.jpg
-your_path/200x300xc/products/image_product.jpg
-your_path/200x0/products/image_product.jpg
-your_path/0x300/products/image_product.jpg
+URLs examples:
+
+```
+your_path/200x300/products/image_product.jpg    <- width or height will be
+                                                   changed if necessary but
+                                                   never increased
+your_path/200x300xc/products/image_product.jpg  <- cropped, ensures exact sizes
+your_path/200x0/products/image_product.jpg      <- auto-calculate height
+your_path/0x300/products/image_product.jpg      <- auto-calculate width
+```
 
 ### Options
 
