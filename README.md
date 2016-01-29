@@ -2,9 +2,9 @@
 
 A auto-image resize controller using [Intervention/image](http://image.intervention.io/) service provider for [Silex](http://silex.sensiolabs.org)
 
-[![Downloads](https://img.shields.io/packagist/dt/microstudi/siex-image-controller.svg?style=flat-square)](https://packagist.org/packages/microstudi/siex-image-controller)
-![Travis status](https://travis-ci.org/microstudi/siex-image-controller.svg?branch=master)
-[![License](https://img.shields.io/packagist/l/microstudi/siex-image-controller.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+[![Downloads](https://img.shields.io/packagist/dt/microstudi/silex-image-controller.svg?style=flat-square)](https://packagist.org/packages/microstudi/silex-image-controller)
+![Travis status](https://travis-ci.org/microstudi/silex-image-controller.svg?branch=master)
+[![License](https://img.shields.io/packagist/l/microstudi/silex-image-controller.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
 ## Requirements
 
@@ -16,7 +16,7 @@ A auto-image resize controller using [Intervention/image](http://image.intervent
 Using composer:
 
 ```
-composer require microstudi/siex-image-controller
+composer require microstudi/silex-image-controller
 ```
 
 ## Usage
