@@ -26,7 +26,7 @@ use Microstudi\Silex\ImageController\Exception\ConfigurationException;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
-use Silex\ControllerProviderInterface;
+use Silex\Api\ControllerProviderInterface;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Image;
 use Intervention\Image\Exception\NotReadableException;
@@ -98,7 +98,7 @@ class ImageController implements ControllerProviderInterface {
 
         if (isset($app['twig'])) {
             $self = $this;
-            $app['twig'] = $app->share($app->extend('twig', function($twig, $app) use($self) {
+            $app['twig'] = $app->extend('twig', function($twig, $app) use($self) {
                 $twig->addFunction(new \Twig_SimpleFunction('image_path', function ($image, $w=0, $h=0, $crop='') use ($self, $app){
                     $size = implode('x', array($w, $h, $crop));
                     //check cache existence
@@ -116,7 +116,7 @@ class ImageController implements ControllerProviderInterface {
             }));
 
                 return $twig;
-            }));
+            });
         }
 
         // extend twig to use the image_path(image, size) function
