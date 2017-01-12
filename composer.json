@@ -16,16 +16,16 @@
         }
     },
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.5.9",
         "microstudi/silex-intervention-image": "~1.0"
     },
     "require-dev": {
-        "silex/silex": "~1.0",
+        "silex/silex": "~2.0",
         "phpunit/phpunit": "~4.7"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "2.0.x-dev"
         }
     }
 }
