@@ -8,7 +8,7 @@ A auto-image resize controller using [Intervention/image](http://image.intervent
 
 ## Requirements
 
-- PHP >= 5.3.3
+- PHP >= 5.5.9 (Same as Silex 2.0)
 - [`InterventionImageServiceProvider`](https://github.com/microstudi/silex-intervention-image)
 
 ## Install
