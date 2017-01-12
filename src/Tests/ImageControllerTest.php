@@ -12,7 +12,6 @@ namespace Microstudi\Silex\ImageController\Tests;
 use Microstudi\Silex\ImageController\ImageController;
 use Microstudi\Silex\InterventionImage\InterventionImageServiceProvider;
 use Silex\Application;
-use Silex\Provider\UrlGeneratorServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
 /**
  * Class ImageControllerTest.
@@ -34,7 +33,6 @@ class ImageControllerTest extends \PHPUnit_Framework_TestCase
                 ));
         $app
             ->register(new InterventionImageServiceProvider())
-            ->register(new UrlGeneratorServiceProvider())
             ;
 
         //Automatic images mount

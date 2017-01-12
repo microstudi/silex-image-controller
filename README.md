@@ -83,6 +83,10 @@ $ vendor/bin/phpunit
 - Readme fix
 - Locked Silex to version 1.1
 
+### 2.0.0
+
+- Updated for Silex 2.0
+
 # LICENSE
 
 The MIT LICENSE (MIT)
