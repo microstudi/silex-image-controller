@@ -30,7 +30,7 @@ $app->register(new InterventionImageServiceProvider);
       ;
 
 //Automatic images
-$app->mount('/your_path', new Microstudi\Silex\Controller\ImageControllerProvider(array(
+$app->mount('/your_path', new Microstudi\Silex\Controller\ImageController(array(
                 'image_path' => '/path/to/original/images',
                 'image_cache_path' => '/path/to/cache/folder'
             ) ));
@@ -77,6 +77,11 @@ $ vendor/bin/phpunit
 ### 1.0.0
 
 - First release
+
+### 1.0.1
+
+- Readme fix
+- Locked Silex to version 1.1
 
 # LICENSE
 
