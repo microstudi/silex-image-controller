@@ -22,7 +22,7 @@ composer require microstudi/silex-image-controller
 ## Usage
 
 ```php
-use Microstudi\Silex\ImageController\ImageControllerServiceProvider;
+use Microstudi\Silex\ImageController\ImageController;
 use Microstudi\Silex\InterventionImage\InterventionImageServiceProvider;
 
 $app = new Silex\Application();
@@ -30,7 +30,7 @@ $app->register(new InterventionImageServiceProvider);
       ;
 
 //Automatic images
-$app->mount('/your_path', new Microstudi\Silex\Controller\ImageController(array(
+$app->mount('/your_path', new ImageController(array(
                 'image_path' => '/path/to/original/images',
                 'image_cache_path' => '/path/to/cache/folder'
             ) ));
@@ -74,18 +74,23 @@ $ vendor/bin/phpunit
 
 ## Changelog
 
-### 1.0.0
+### 2.0.2
 
-- First release
+- README example fix.
+
+### 2.0.0
+
+- Updated for Silex 2.0
 
 ### 1.0.1
 
 - Readme fix
 - Locked Silex to version 1.1
 
-### 2.0.0
+### 1.0.0
 
-- Updated for Silex 2.0
+- First release
+
 
 # LICENSE
 
