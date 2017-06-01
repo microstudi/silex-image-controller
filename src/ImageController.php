@@ -45,6 +45,7 @@ class ImageController implements ControllerProviderInterface {
     protected $default_w = 32,
               $default_h = 32,
               $default_quality = 90;
+    protected $resize_callback; // called after resizing an image
 
     /**
      * Requires the path where to find the file
@@ -82,6 +83,9 @@ class ImageController implements ControllerProviderInterface {
         }
         if(isset($config['image_default_quality'])) {
             $this->default_quality = (int) $config['image_default_quality'];
+        }
+        if(isset($config['resize_callback'])) {
+            $this->resize_callback = $config['resize_callback'];
         }
     }
 
@@ -241,6 +245,12 @@ class ImageController implements ControllerProviderInterface {
                     $constraint->upsize();
                 });
             }
+
+            // call callback if available
+            if (!is_null($this->resize_callback) && is_callable($this->resize_callback)) {
+                $image = call_user_func($this->resize_callback, $image);
+            }
+
             //save to cache
             $this->saveCacheFile($image, $cached_file);
         }
