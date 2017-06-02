@@ -45,7 +45,8 @@ class ImageController implements ControllerProviderInterface {
     protected $default_w = 32,
               $default_h = 32,
               $default_quality = 90;
-    protected $resize_callback; // called after resizing an image
+    protected $resize_callbacks = [];
+    protected $twig_function = 'image_path';
 
     /**
      * Requires the path where to find the file
@@ -84,8 +85,11 @@ class ImageController implements ControllerProviderInterface {
         if(isset($config['image_default_quality'])) {
             $this->default_quality = (int) $config['image_default_quality'];
         }
-        if(isset($config['resize_callback'])) {
-            $this->resize_callback = $config['resize_callback'];
+        if(isset($config['resize_callbacks'])) {
+            $this->resize_callbacks = $config['resize_callbacks'];
+        }
+        if(isset($config['twig_function'])) {
+            $this->twig_function = $config['twig_function'];
         }
     }
 
@@ -103,8 +107,8 @@ class ImageController implements ControllerProviderInterface {
         if (isset($app['twig'])) {
             $self = $this;
             $app['twig'] = $app->extend('twig', function($twig, $app) use($self) {
-                $twig->addFunction(new \Twig_SimpleFunction('image_path', function ($image, $w=0, $h=0, $crop='') use ($self, $app){
-                    $size = implode('x', array($w, $h, $crop));
+                $twig->addFunction(new \Twig_SimpleFunction($this->twig_function, function ($image, $w=0, $h=0, $crop='', $callback='') use ($self, $app){
+                    $size = implode('x', array($w, $h, $crop, $callback));
                     //check cache existence
                     if($self->cache_path && !empty($self->cache_url)) {
                         $cached_file = $self->getCachedFilePath($image, $size);
@@ -113,10 +117,10 @@ class ImageController implements ControllerProviderInterface {
                         }
                     }
                     if($w || $h) {
-                        return $app['url_generator']->generate('image_resize', array('image' => $image, 'size' => $size));
+                        return $app['url_generator']->generate($this->twig_function.'.image_resize', array('image' => $image, 'size' => $size));
                     }
 
-                    return $app['url_generator']->generate('image_flush', array('image' => $image));
+                    return $app['url_generator']->generate($this->twig_function.'.image_flush', array('image' => $image));
             }));
 
                 return $twig;
@@ -137,7 +141,7 @@ class ImageController implements ControllerProviderInterface {
             ->get('/{size}/{image}', array($this, 'resizeAction'))
             ->assert('size', '(\d+)(x)(\d+)([a-z]*)')
             ->assert('image', '.*')
-            ->bind('image_resize');
+            ->bind($this->twig_function.'.image_resize');
 
         // flush image
         // routes like:
@@ -145,25 +149,25 @@ class ImageController implements ControllerProviderInterface {
         $controllers
             ->get('/{image}', array($this, 'flushAction'))
             ->assert('image', '.*')
-            ->bind('image_flush');
+            ->bind($this->twig_function.'.image_flush');
 
 
         return $controllers;
     }
 
-    private static function getMimeFromFile($path) {
+    protected static function getMimeFromFile($path) {
         return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path);
     }
 
-    private static function getMimeFromData($data) {
+    protected static function getMimeFromData($data) {
         return finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $data);
     }
 
-    private function sendImage(Application $app, $file) {
+    protected function sendImage(Application $app, $file) {
         return $app->sendFile($file, 200);
     }
 
-    private function streamImage(Application $app, Image $image) {
+    protected function streamImage(Application $app, Image $image) {
         $image->encode(null, $this->default_quality);
         $mime = self::getMimeFromData($image->getEncoded());
         return $app->stream(
@@ -215,7 +219,7 @@ class ImageController implements ControllerProviderInterface {
     public function resizeAction(Request $request, Application $app) {
         $size = $request->attributes->get('size');
         $file = $request->attributes->get('image');
-        @list($w, $h, $crop) = @explode('x', $size);
+        @list($w, $h, $crop, $callback) = @explode('x', $size);
         $w = (int) $w;
         $h = (int) $h;
         if($w <= 0) $w = null;
@@ -246,9 +250,12 @@ class ImageController implements ControllerProviderInterface {
                 });
             }
 
-            // call callback if available
-            if (!is_null($this->resize_callback) && is_callable($this->resize_callback)) {
-                $image = call_user_func($this->resize_callback, $image);
+            if (isset($this->resize_callbacks['default']) && !is_null($this->resize_callbacks['default']) && is_callable($this->resize_callbacks['default'])) {
+                $image = call_user_func($this->resize_callbacks['default'], $image);
+            }
+
+            if (!empty($callback) && isset($this->resize_callbacks[$callback]) && !is_null($this->resize_callbacks[$callback]) && is_callable($this->resize_callbacks[$callback])) {
+                $image = call_user_func($this->resize_callbacks[$callback], $image);
             }
 
             //save to cache
@@ -272,14 +279,14 @@ class ImageController implements ControllerProviderInterface {
         return $this->streamImage($app, $image);
     }
 
-    private function getCachedFilePath($file, $size='') {
+    protected function getCachedFilePath($file, $size='') {
         if($this->cache_path && $file) {
             return ($size ? "$size/" : '') . $file;
         }
         return false;
     }
 
-    private function getCachedFile($file, $cached_file) {
+    protected function getCachedFile($file, $cached_file) {
         if($this->cache_path && $file) {
             $cached_file = $this->cache_path . $cached_file;
             $original_file = $this->image_path . $file;
@@ -294,7 +301,7 @@ class ImageController implements ControllerProviderInterface {
         return false;
     }
 
-    private function saveCacheFile($image, $cached_file) {
+    protected function saveCacheFile($image, $cached_file) {
         if($this->cache_path && $image instanceOf Image && $cached_file) {
             $cached_file = $this->cache_path . $cached_file;
             //recreate dirs if needed
